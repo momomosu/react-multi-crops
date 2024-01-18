@@ -15,7 +15,6 @@ export const DeleteIcon = props => (
         cursor: pointer;
         float: right;
         background:#262626;
-        opacity: 0.8;
       }
       .rmc-remove {
         color: white;
@@ -65,7 +64,6 @@ export const NumberIcon = ({ number }) => (
         text-align: center;
         line-height: 15px;
         color: white;
-        opacity: 0.8;
       }
     `}
     </style>

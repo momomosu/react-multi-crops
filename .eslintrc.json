@@ -19,7 +19,6 @@
   },
   "parser": "babel-eslint",
   "rules": {
-      "semi": ["error", "never"],
       "react/jsx-filename-extension": "off",
       "no-return-assign": "off",
       "react/sort-comp": "off",

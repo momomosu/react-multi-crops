@@ -16,6 +16,8 @@ const isValidPoint = (point = {}) => {
 
 class MultiCrops extends Component {
   drawingIndex = -1
+  colorIndex = 0;
+  color = ""
 
   pointA = {}
 
@@ -29,6 +31,7 @@ class MultiCrops extends Component {
         key={coor.id || index}
         index={index}
         coordinate={coor}
+        color={coor.color}
         {...props}
       />))(props.coordinates)
   }
@@ -42,13 +45,15 @@ class MultiCrops extends Component {
   }
 
   handleMouseDown = (e) => {
-    const { coordinates } = this.props
+    const { coordinates, colors } = this.props
     if (e.target === this.img || e.target === this.container) {
       const { x, y } = this.getCursorPosition(e)
 
       this.drawingIndex = coordinates.length
       this.pointA = { x, y }
       this.id = shortid.generate()
+      this.color = colors[this.colorIndex++]
+      if(this.colorIndex >= colors.length) this.colorIndex = 0;
     }
   }
 
@@ -66,6 +71,7 @@ class MultiCrops extends Component {
         width: Math.abs(pointA.x - pointB.x),
         height: Math.abs(pointA.y - pointB.y),
         id: this.id,
+        color: this.color,
       }
       const nextCoordinates = clone(coordinates)
       nextCoordinates[this.drawingIndex] = coordinate
@@ -126,11 +132,13 @@ MultiCrops.propTypes = {
   onDraw: func, // eslint-disable-line
   onChange: func, // eslint-disable-line
   onLoad: func, // eslint-disable-line
+  colors: arrayOf(string)
 }
 
 MultiCrops.defaultProps = {
   coordinates: [],
   src: '',
+  colors: ["#ff0000", "#00ff00", "#0000ff"]
 }
 
 export default MultiCrops

@@ -7,7 +7,7 @@ import { DeleteIcon, NumberIcon } from './Icons'
 class Crop extends Component {
   static cropStyle = (coordinate) => {
     const {
-      x, y, width, height,
+      x, y, width, height, color
     } = coordinate
 
     return {
@@ -20,9 +20,8 @@ class Crop extends Component {
       top: y,
       left: x,
 
-
-      boxShadow: '0 0 6px #000',
-      background: '#8c8c8c',
+      boxShadow: '0 0 3px #000',
+      background: color || '#8c8c8c',
       opacity: 0.6,
     }
   }

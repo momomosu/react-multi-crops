@@ -1,49 +1,53 @@
-import React from 'react'
+import React, {useState} from 'react'
 import ReactDOM from 'react-dom'
 import MultiCrops from '../src/components/MultiCrops'
-import img from './imgs/kumamon.jpg'
+import sampleImg from './imgs/kumamon.jpg'
 
+const samples = [
+  { x: 178, y: 91, width: 158, height: 132, id: 'SJxb6YpuG', },
+  { x: 436, y: 97, width: 170, height: 168, id: 'SJMZ6YTdf', },
+];
+const cropColors = ["#ff9999", "#99ff99", "#9999ff", "#ffff55", "#ff55ff"];
 
-class App extends React.Component {
-  state = {
-    coordinates: [
-      {
-        x: 178, y: 91, width: 158, height: 132, id: 'SJxb6YpuG',
-      },
-      {
-        x: 436, y: 97, width: 170, height: 168, id: 'SJMZ6YTdf',
-      },
-    ],
-  }
+const App = () => {
+  const [crops, setCrops] = useState(samples);
+  const [image, setImage] = useState(sampleImg);
 
-  changeCoordinate = (coordinate, index, coordinates) => {
-    this.setState({
-      coordinates,
-    })
+  const onChangeImage = (args) => {
+    const file = args.target.files[0];
+    setImage(URL.createObjectURL(file));
+    console.log(file);
+    console.log(args);
   }
-  deleteCoordinate = (coordinate, index, coordinates) => {
-    this.setState({
-      coordinates,
-    })
+  const changeCoordinate = (coordinate, index, _crops) => {
+    setCrops(_crops);
   }
-  render() {
-    return (
-      <div>
-        <h1>Dragging, Drawing, Resizing rectangles on the img</h1>
-        <MultiCrops
-          src={img}
-          width={1000}
-          coordinates={this.state.coordinates}
-          // onDrag={this.changeCoordinate}
-          // onResize={this.changeCoordinate}
-          // onDraw={this.changeCoordinate}
-          onChange={this.changeCoordinate}
-          onDelete={this.deleteCoordinate}
-          // onLoad={e => console.log(e.target.height, e.target.width)}
-        />
-      </div>
-    )
+  const deleteCoordinate = (coordinate, index, _crops) => {
+    setCrops(_crops);
   }
+  return (
+    <div>
+      <h1>Dragging, Drawing, Resizing rectangles on the img</h1>
+
+      <input type="file" onChange={onChangeImage} />
+      {image &&
+        <div>
+          <img src={image} alt="Preview" />
+        </div>
+      }
+      <MultiCrops
+        src={image}
+        coordinates={crops}
+        // onDrag={this.changeCoordinate}
+        // onResize={this.changeCoordinate}
+        // onDraw={this.changeCoordinate}
+        onChange={changeCoordinate}
+        onDelete={deleteCoordinate}
+        colors={cropColors}
+        // onLoad={e => console.log(e.target.height, e.target.width)}
+      />
+    </div>
+  )
 }
 
 
