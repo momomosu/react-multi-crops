@@ -64,9 +64,13 @@ class Crop extends Component {
     } = this.props
     const { width, height } = e.rect
     const { dx, dy, edges } = e
+    const { dex, dey } = e.delta
     const { left, top } = e.deltaRect
-    const addX = index === 0 ? left : (edges.left && left !== 0 ? dx : 0);
-    const addY = index === 0 ? top : (edges.top && top !== 0 ? dy : 0);
+    const addX = (edges.left && left !== 0 ? dx : 0);
+    const addY = (edges.top && top !== 0 ? dy : 0);
+
+    // eslint-disable-next-line no-console
+    console.log({width, height, left, top, addX, addY, dx, dy, dex, dey});
 
     const nextCoordinate = {
       ...coordinate, x: x + addX, y: y + addY, width, height,
@@ -74,8 +78,6 @@ class Crop extends Component {
     const nextCoordinates = update(index, nextCoordinate)(coordinates)
     onResize?.(nextCoordinate, index, nextCoordinates)
     onChange?.(nextCoordinate, index, nextCoordinates)
-    // eslint-disable-next-line no-console
-    console.log({left, top, addX, addY, dx, dy}, e);
   }
   handleDragMove = (e) => {
     const {
