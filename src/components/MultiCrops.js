@@ -128,6 +128,7 @@ MultiCrops.propTypes = {
   onDraw: func, // eslint-disable-line
   onChange: func, // eslint-disable-line
   onLoad: func, // eslint-disable-line
+  onClick: func, // eslint-disable-line
   colors: arrayOf(string)
 }
 
