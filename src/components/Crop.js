@@ -27,6 +27,8 @@ class Crop extends Component {
   }
 
   componentDidMount() {
+    // eslint-disable-next-line no-console
+    console.log("test")
     interact(this.crop)
       .draggable({})
       .resizable({
@@ -37,6 +39,8 @@ class Crop extends Component {
       .on('click', this.handleClick)
       .on('dragmove', this.handleDragMove)
       .on('resizemove', this.handleResizeMove)
+
+    interact.debug(false); // デバッグモードを無効にする
   }
   shouldComponentUpdate(nextProps) {
     // reduce uncessary update
@@ -71,6 +75,8 @@ class Crop extends Component {
     const nextCoordinates = update(index, nextCoordinate)(coordinates)
     onResize?.(nextCoordinate, index, nextCoordinates)
     onChange?.(nextCoordinate, index, nextCoordinates)
+    // eslint-disable-next-line no-console
+    console.log("handleResizeMove", e)
   }
   handleDragMove = (e) => {
     const {
