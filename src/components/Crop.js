@@ -5,6 +5,9 @@ import interact from 'interactjs'
 import { DeleteIcon, NumberIcon } from './Icons'
 
 class Crop extends Component {
+  dxSum = 0;
+  dySum = 0;
+
   static cropStyle = (coordinate) => {
     const {
       x, y, width, height, color
@@ -86,9 +89,13 @@ class Crop extends Component {
     } = this.props
     const { dx, dy } = e
     const { left, top } = e.rect
+    this.dxSum += dx;
+    this.dySum += dy;
+
     // eslint-disable-next-line no-console
-    console.log({dx, dy, x, y, left, top, newx:x+dx, newy:y+dy})
-    const nextCoordinate = { ...coordinate, x: x + dx, y: y + dy }
+    console.log({dx, dy, x, y, left, top, newx:x+this.dxSum, newy:y+this.dySum})
+    // セットした値が次のイベントに時に引き継がれてない。連続でuseStateするようなパターン？
+    const nextCoordinate = {...coordinate, x: x + this.dxSum, y: y + this.dySum}
     const nextCoordinates = update(index, nextCoordinate)(coordinates)
     onDrag?.(nextCoordinate, index, nextCoordinates)
     onChange?.(nextCoordinate, index, nextCoordinates)
@@ -111,6 +118,9 @@ class Crop extends Component {
 
 
   render() {
+    this.dxSum = 0;
+    this.dySum = 0;
+
     const { coordinate, index } = this.props
     return (
       <div
