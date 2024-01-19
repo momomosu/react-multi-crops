@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { equals, is, update, remove } from 'ramda'
+import { equals, update, remove } from 'ramda'
 import interact from 'interactjs'
 import { DeleteIcon, NumberIcon } from './Icons'
 
@@ -34,6 +34,7 @@ class Crop extends Component {
           left: true, right: true, bottom: true, top: true,
         },
       })
+      .on('click', this.handleClick)
       .on('dragmove', this.handleDragMove)
       .on('resizemove', this.handleResizeMove)
   }
@@ -43,6 +44,15 @@ class Crop extends Component {
       || (nextProps.index !== this.props.index)
   }
 
+  handleClick = () => {
+    const {
+      index,
+      coordinate,
+      onClick,
+    } = this.props
+
+    onClick?.(coordinate, index)
+  }
   handleResizeMove = (e) => {
     const {
       index,
@@ -59,12 +69,8 @@ class Crop extends Component {
       ...coordinate, x: x + left, y: y + top, width, height,
     }
     const nextCoordinates = update(index, nextCoordinate)(coordinates)
-    if (is(Function, onResize)) {
-      onResize(nextCoordinate, index, nextCoordinates)
-    }
-    if (is(Function, onChange)) {
-      onChange(nextCoordinate, index, nextCoordinates)
-    }
+    onResize?.(nextCoordinate, index, nextCoordinates)
+    onChange?.(nextCoordinate, index, nextCoordinates)
   }
   handleDragMove = (e) => {
     const {
@@ -78,13 +84,8 @@ class Crop extends Component {
     const { dx, dy } = e
     const nextCoordinate = { ...coordinate, x: x + dx, y: y + dy }
     const nextCoordinates = update(index, nextCoordinate)(coordinates)
-    if (is(Function, onDrag)) {
-      onDrag(nextCoordinate, index, nextCoordinates)
-    }
-
-    if (is(Function, onChange)) {
-      onChange(nextCoordinate, index, nextCoordinates)
-    }
+    onDrag?.(nextCoordinate, index, nextCoordinates)
+    onChange?.(nextCoordinate, index, nextCoordinates)
   }
 
   handleDelete = () => {
@@ -95,14 +96,11 @@ class Crop extends Component {
       coordinates,
     } = this.props
     const nextCoordinates = remove(index, 1)(coordinates)
-    if (is(Function, onDelete)) {
-      onDelete(coordinate, index, nextCoordinates)
-    }
+    onDelete?.(coordinate, index, nextCoordinates)
   }
 
   componentWillUnmount() {
-    interact(this.crop)
-      .unset()
+    interact(this.crop).unset()
   }
 
 
@@ -114,9 +112,7 @@ class Crop extends Component {
         ref={crop => this.crop = crop}
       >
         <NumberIcon number={index + 1} />
-        <DeleteIcon
-          onClick={this.handleDelete}
-        />
+        <DeleteIcon onClick={this.handleDelete} />
       </div>
     )
   }
@@ -137,6 +133,7 @@ Crop.propTypes = {
   onDrag: PropTypes.func, // eslint-disable-line
   onDelete: PropTypes.func, // eslint-disable-line
   onChange: PropTypes.func, // eslint-disable-line
+  onClick: PropTypes.func, // eslint-disable-line
   coordinates: PropTypes.array // eslint-disable-line
 }
 

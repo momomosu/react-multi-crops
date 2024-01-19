@@ -4,8 +4,8 @@ import MultiCrops from '../src/components/MultiCrops'
 import sampleImg from './imgs/kumamon.jpg'
 
 const samples = [
-  { x: 178, y: 91, width: 158, height: 132, id: 'SJxb6YpuG', },
-  { x: 436, y: 97, width: 170, height: 168, id: 'SJMZ6YTdf', },
+  { x: 178, y: 91, width: 158, height: 132, id: 'SJxb6YpuG', color: "#ffff55"},
+  { x: 436, y: 97, width: 170, height: 168, id: 'SJMZ6YTdf', color: "#ff55ff"},
 ];
 const cropColors = ["#ff9999", "#99ff99", "#9999ff", "#ffff55", "#ff55ff"];
 
@@ -25,22 +25,23 @@ const App = () => {
   const deleteCoordinate = (coordinate, index, _crops) => {
     setCrops(_crops);
   }
+  const onClick = (coordinate, index) => {
+    console.log("onClick", coordinate);
+  }
   return (
     <div>
       <h1>Dragging, Drawing, Resizing rectangles on the img</h1>
 
-      <input type="file" onChange={onChangeImage} />
-      {image &&
-        <div>
-          <img src={image} alt="Preview" />
-        </div>
-      }
+      <div>
+        <input type="file" onChange={onChangeImage} />
+      </div>
       <MultiCrops
         src={image}
         coordinates={crops}
         // onDrag={this.changeCoordinate}
         // onResize={this.changeCoordinate}
         // onDraw={this.changeCoordinate}
+        onClick={onClick}
         onChange={changeCoordinate}
         onDelete={deleteCoordinate}
         colors={cropColors}

@@ -2,14 +2,15 @@
 
 A multiple cropping component for React
 
-[online demo](https://beizhedenglong.github.io/react-multi-crops/)
+forked from https://beizhedenglong.github.io/react-multi-crops/ 　 [(online demo)](https://beizhedenglong.github.io/react-multi-crops/)
 
-![kumamon](./examples/imgs/kumamon.gif)
 
+![img.png](examples/imgs/preview.png)
 
 ## Installation
 ```
-npm install react-multi-crops --save
+npm install react-multi-crops@github:momomosu/react-multi-crops
+ yarn add react-multi-crops@github:momomosu/react-multi-crops
 ```
 
 
@@ -43,22 +44,21 @@ const App = () => {
   const deleteCoordinate = (coordinate, index, _crops) => {
     setCrops(_crops);
   }
+  const onClick = (coordinate, index) => {
+    console.log("onClick", coordinate);
+  }
   return (
       <div>
         <h1>Dragging, Drawing, Resizing rectangles on the img</h1>
 
         <input type="file" onChange={onChangeImage} />
-        {image &&
-            <div>
-              <img src={image} alt="Preview" />
-            </div>
-        }
         <MultiCrops
             src={image}
             coordinates={crops}
             // onDrag={this.changeCoordinate}
             // onResize={this.changeCoordinate}
             // onDraw={this.changeCoordinate}
+            onClick={onClick}
             onChange={changeCoordinate}
             onDelete={deleteCoordinate}
             colors={cropColors}
@@ -84,7 +84,7 @@ ReactDOM.render(
 | Prop        | Description                                                                                        | Type                                     | Default |
 |-------------|----------------------------------------------------------------------------------------------------|------------------------------------------|---------|
 | src         | Src of background image.                                                                           | string                                   | -       |
-| coordinates | An array of coordinate( see the table blew), {id, x, y, width, height}.                            | array                                    | []      |
+| coordinates | An array of coordinate( see the table below), {id, x, y, width, height, color}.                    | array                                    | []      |
 | width       | Width of background image.                                                                         | number(in pixel)                         | -       |
 | height      | Height of background image.                                                                        | number(in pixel)                         | -       |
 | onDraw      | A callback which hanppends when a user starts drawing a new rectangle.                             | funtion(coordinate , index, coordinates) | -       |
@@ -93,18 +93,19 @@ ReactDOM.render(
 | onChange    | A callback which hanppends when a user starts drawing, draging or resizing a new/exited rectangle. | funtion(coordinate , index, coordinates) | -       |
 | onDelete    | A callback which hanppends when a user delete a exited rectangle.                                  | funtion(coordinate , index, coordinates) | -       |
 | onLoad      | The callback is  triggered when the background image is loaded.                                    | onLoad(e)                                | -       |
+| onClick     | callback on crop clicked                                                                           | function(coordinate, index)              |
 | colors      | array of crop colors                                                                               | array(string)                            |         |
 
 
 
 ### coordinate
 
-| Prop   | Description                                                  | Type             | Default |
-| ------ | ------------------------------------------------------------ | ---------------- | ------- |
-| id     | Unique between in coordinates array                          | string           | -       |
+| Prop   | Description                                                                                       | Type             | Default |
+|--------|---------------------------------------------------------------------------------------------------|------------------|---------|
+| id     | Unique in coordinates array                                                                       | string           | -       |
 | x      | X coordinate  relative to left corner(0,0) of background image. From left to right, x will go up. | number(in pixel) | -       |
 | y      | Y coordinate  relative to left corner(0,0) of background image. From top to bottom, y will go up. | number(in pixel) | -       |
-| width  | Width of coordinate                                          | number(in pixel) | -       |
-| height | Height of coordinate                                         | number(in pixel) | -       |
-|color| color of crop|string||
+| width  | Rect width                                                                                        | number(in pixel) | -       |
+| height | Rect height                                                                                       | number(in pixel) | -       |
+| color  | Color of rect                                                                                    | string           |         |
 

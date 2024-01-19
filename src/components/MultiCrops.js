@@ -75,12 +75,8 @@ class MultiCrops extends Component {
       }
       const nextCoordinates = clone(coordinates)
       nextCoordinates[this.drawingIndex] = coordinate
-      if (is(Function, onDraw)) {
-        onDraw(coordinate, this.drawingIndex, nextCoordinates)
-      }
-      if (is(Function, onChange)) {
-        onChange(coordinate, this.drawingIndex, nextCoordinates)
-      }
+      onDraw?.(coordinate, this.drawingIndex, nextCoordinates)
+      onChange?.(coordinate, this.drawingIndex, nextCoordinates)
     }
   }
 
