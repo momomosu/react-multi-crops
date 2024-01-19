@@ -65,8 +65,8 @@ class Crop extends Component {
     const { width, height } = e.rect
     const { dx, dy, edges } = e
     const { left, top } = e.deltaRect
-    const addX = (edges.left && left !== 0 ? dx : 0);
-    const addY = (edges.top && top !== 0 ? dy : 0);
+    const addX = index === 0 ? left : (edges.left && left !== 0 ? dx : 0);
+    const addY = index === 0 ? top : (edges.top && top !== 0 ? dy : 0);
 
     const nextCoordinate = {
       ...coordinate, x: x + addX, y: y + addY, width, height,
