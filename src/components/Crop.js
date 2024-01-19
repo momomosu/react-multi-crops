@@ -41,6 +41,11 @@ class Crop extends Component {
       .on('resizemove', this.handleResizeMove)
 
     interact.debug(false); // デバッグモードを無効にする
+    interact.maxInteractions(Infinity).autoScroll({
+      container: document.body,
+      margin: 50,
+      speed: 800
+    });
   }
   shouldComponentUpdate(nextProps) {
     // reduce uncessary update
