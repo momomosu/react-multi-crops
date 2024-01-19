@@ -27,8 +27,6 @@ class Crop extends Component {
   }
 
   componentDidMount() {
-    // eslint-disable-next-line no-console
-    console.log("test")
     interact(this.crop)
       .draggable({})
       .resizable({
@@ -39,13 +37,6 @@ class Crop extends Component {
       .on('click', this.handleClick)
       .on('dragmove', this.handleDragMove)
       .on('resizemove', this.handleResizeMove)
-
-    interact.debug(false); // デバッグモードを無効にする
-    interact.maxInteractions(Infinity).autoScroll({
-      container: document.body,
-      margin: 50,
-      speed: 800
-    });
   }
   shouldComponentUpdate(nextProps) {
     // reduce uncessary update
