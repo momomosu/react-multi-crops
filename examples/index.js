@@ -4,7 +4,7 @@ import MultiCrops from '../src/components/MultiCrops'
 import sampleImg from './imgs/kumamon.jpg'
 
 const samples = [
-  { x: 178, y: 91, width: 158, height: 132, id: 'SJxb6YpuG', color: "#ffff55"},
+  { x: 178, y: 91, width: 158, height: 132, id: 'SJxb6YpuG', color: "#ffff55", className: "test1"},
   { x: 436, y: 97, width: 170, height: 168, id: 'SJMZ6YTdf', color: "#ff55ff"},
 ];
 const cropColors = ["#ff9999", "#99ff99", "#9999ff", "#ffff55", "#ff55ff"];

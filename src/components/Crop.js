@@ -42,9 +42,7 @@ class Crop extends Component {
       .on('resizemove', this.handleResizeMove)
   }
   shouldComponentUpdate(nextProps) {
-    // reduce uncessary update
-    return !equals(nextProps.coordinate, this.props.coordinate)
-      || (nextProps.index !== this.props.index)
+    return !equals(nextProps, this.props)
   }
 
   handleClick = () => {
@@ -88,13 +86,10 @@ class Crop extends Component {
       onChange,
     } = this.props
     const { dx, dy } = e
-    const { left, top } = e.rect
+    // may called multi times between render.
     this.dxSum += dx;
     this.dySum += dy;
 
-    // eslint-disable-next-line no-console
-    console.log({dx, dy, x, y, left, top, newx:x+this.dxSum, newy:y+this.dySum})
-    // セットした値が次のイベントに時に引き継がれてない。連続でuseStateするようなパターン？
     const nextCoordinate = {...coordinate, x: x + this.dxSum, y: y + this.dySum}
     const nextCoordinates = update(index, nextCoordinate)(coordinates)
     onDrag?.(nextCoordinate, index, nextCoordinates)
@@ -116,24 +111,20 @@ class Crop extends Component {
     interact(this.crop).unset()
   }
 
-
   render() {
     this.dxSum = 0;
     this.dySum = 0;
 
-    const { coordinate, index } = this.props
+    const { coordinate, index, className } = this.props
     return (
-      <div
-        style={Crop.cropStyle(coordinate)}
-        ref={crop => this.crop = crop}
-      >
+      <div style={Crop.cropStyle(coordinate)} className={`crop ${className}`} ref={crop => this.crop = crop}>
         <NumberIcon number={index + 1} />
         <DeleteIcon onClick={this.handleDelete} />
       </div>
     )
   }
 }
-
+// todo coordinatesを親だけが知るようにリファクタリング
 
 export const coordinateType = PropTypes.shape({
   x: PropTypes.number.isRequired,
@@ -150,7 +141,11 @@ Crop.propTypes = {
   onDelete: PropTypes.func, // eslint-disable-line
   onChange: PropTypes.func, // eslint-disable-line
   onClick: PropTypes.func, // eslint-disable-line
-  coordinates: PropTypes.array // eslint-disable-line
+  coordinates: PropTypes.array, // eslint-disable-line
+  className: PropTypes.string
+}
+Crop.defaultProps = {
+  className: "",
 }
 
 export default Crop

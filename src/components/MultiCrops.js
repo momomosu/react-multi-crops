@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { both, clone, is, complement, equals, map, addIndex } from 'ramda'
+import { both, clone, is, complement, equals } from 'ramda'
 import PropTypes from 'prop-types'
 import shortid from 'shortid'
 import Crop, { coordinateType } from './Crop'
@@ -18,23 +18,8 @@ class MultiCrops extends Component {
   drawingIndex = -1
   colorIndex = 0;
   color = ""
-
   pointA = {}
-
   id = shortid.generate()
-
-  renderCrops = (props) => {
-    const indexedMap = addIndex(map)
-    return indexedMap((coor, index) =>
-      (<Crop
-        // improve performance when delet crop in middle array
-        key={coor.id || index}
-        index={index}
-        coordinate={coor}
-        color={coor.color}
-        {...props}
-      />))(props.coordinates)
-  }
 
   getCursorPosition = (e) => {
     const { left, top } = this.container.getBoundingClientRect()
@@ -59,7 +44,7 @@ class MultiCrops extends Component {
 
 
   handleMouseMove = (e) => {
-    const { onDraw, onChange, coordinates } = this.props
+    const { onDraw, coordinates } = this.props
     const { pointA } = this
     if (isValidPoint(pointA)) {
       const pointB = this.getCursorPosition(e)
@@ -76,7 +61,7 @@ class MultiCrops extends Component {
       const nextCoordinates = clone(coordinates)
       nextCoordinates[this.drawingIndex] = coordinate
       onDraw?.(coordinate, this.drawingIndex, nextCoordinates)
-      onChange?.(coordinate, this.drawingIndex, nextCoordinates)
+      this.onChangeCrop(coordinate, this.drawingIndex, nextCoordinates)
     }
   }
 
@@ -84,17 +69,25 @@ class MultiCrops extends Component {
     this.pointA = {}
   }
 
+  onChangeCrop = (coordinate, index, _crops) => {
+    _crops.forEach(c => c.className = "");
+    coordinate.className = "active";
+    this.props.onChange?.(coordinate, index, _crops);
+  }
+
+  onClickCrop = (coordinate, index) => {
+    this.props.coordinates.forEach(c => c.className = "");
+    coordinate.className = "active";
+    this.props.onChange?.(coordinate, index, [...this.props.coordinates]);
+  }
+
   render() {
     const {
       src, width, height, onLoad,
     } = this.props
-    // const { clicked } = this.state
     return (
       <div
-        style={{
-          display: 'inline-block',
-          position: 'relative',
-        }}
+        style={{ display: 'inline-block', position: 'relative',}}
         onMouseDown={this.handleMouseDown}
         onMouseMove={this.handleMouseMove}
         onMouseUp={this.handlMouseUp}
@@ -109,8 +102,20 @@ class MultiCrops extends Component {
           alt=""
           draggable={false}
         />
-        {this.renderCrops(this.props)}
-
+        {
+          this.props.coordinates.map((coor, index) => (
+            <Crop
+              key={coor.id || index}
+              index={index}
+              coordinate={coor}
+              color={coor.color}
+              className={coor.className}
+              {...this.props}
+              onChange={this.onChangeCrop}
+              onClick={this.onClickCrop}
+            />
+          ))
+        }
       </div>
     )
   }
