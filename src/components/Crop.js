@@ -57,23 +57,27 @@ class Crop extends Component {
     const {
       index,
       coordinate,
-      coordinate: { x, y },
+      coordinate: { x, y, width, height },
       coordinates,
       onResize,
       onChange,
     } = this.props
-    const { width, height } = e.rect
+    const r = x + width;
+    const b = y + height;
+    const { width: newW, height: newH } = e.rect
     const { dx, dy, edges } = e
     const { dex, dey } = e.delta
     const { left, top } = e.deltaRect
     const addX = (edges.left && left !== 0 ? dx : 0);
     const addY = (edges.top && top !== 0 ? dy : 0);
+    const newX = edges.left ? r - newW : x;
+    const newY = edges.top ? b - newH : y;
 
     // eslint-disable-next-line no-console
-    console.log({width, height, left, top, addX, addY, dx, dy, dex, dey});
+    console.log({r, b, width, height, left, top, addX, addY, dx, dy, dex, dey});
 
     const nextCoordinate = {
-      ...coordinate, x: x + addX, y: y + addY, width, height,
+      ...coordinate, x: newX, y: newY, width: newW, height: newH,
     }
     const nextCoordinates = update(index, nextCoordinate)(coordinates)
     onResize?.(nextCoordinate, index, nextCoordinates)
