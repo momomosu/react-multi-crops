@@ -1,3 +1,3 @@
-import MultiCrops from './components/MultiCropsClass'
+import {MultiCrops} from './components/MultiCrops'
 
 export default MultiCrops
