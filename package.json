@@ -1,15 +1,14 @@
 {
   "name": "react-multi-crops",
-  "version": "0.0.12",
+  "version": "0.1.0",
   "main": "lib/index.js",
   "license": "MIT",
   "author": {
-    "name": "Victor Wang",
-    "email": "TheHappiestMan@qq.com"
+    "name": "Masaki Goto"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/beizhedenglong/react-multi-crops.git"
+    "url": "https://github.com/momomosu/react-multi-crops.git"
   },
   "scripts": {
     "start": "parcel ./examples/index.html -p 3001",
