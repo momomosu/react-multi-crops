@@ -1,147 +1,111 @@
-import React, { Component } from 'react'
-import { both, clone, is, complement, equals } from 'ramda'
-import PropTypes from 'prop-types'
+import React, {useRef, useState} from 'react'
 import shortid from 'shortid'
-import Crop, { coordinateType } from './Crop'
+import {Crop} from './Crop'
 
 
 const isValidPoint = (point = {}) => {
-  const strictNumber = number => both(
-    is(Number),
-    complement(equals(NaN)),
-  )(number)
+  const strictNumber = number => typeof number === 'number' && !Number.isNaN(number);
   return strictNumber(point.x) && strictNumber(point.y)
 }
 
+const defaultColors = ["#ff9999", "#99ff99", "#9999ff", "#ffff55", "#ff55ff"];
 
-class MultiCrops extends Component {
-  drawingIndex = -1
-  colorIndex = 0;
-  color = ""
-  pointA = {}
-  id = shortid.generate()
+export const MultiCrops = ({src, width, height, crops, colors=defaultColors, onChange=null}) => {
+  const [pointStart, setPointStart] = useState({});
+  const [drawingIndex, setDrawingIndex] = useState(-1);
+  const [colorIndex, setColorIndex] = useState(0);
+  const [color, setColor] = useState("");
+  const [id, setId] = useState("");
+  const containerRef = useRef();
+  const imgRef = useRef();
 
-  getCursorPosition = (e) => {
-    const { left, top } = this.container.getBoundingClientRect()
+  const getCursorPosition = (e) => {
+    const { left, top } = containerRef.current.getBoundingClientRect()
     return {
       x: e.clientX - left,
       y: e.clientY - top,
     }
   }
 
-  handleMouseDown = (e) => {
-    const { coordinates, colors } = this.props
-    if (e.target === this.img || e.target === this.container) {
-      const { x, y } = this.getCursorPosition(e)
+  const handleMouseDown = (e) => {
+    if (e.target === imgRef.current || e.target === containerRef.current) {
+      const { x, y } = getCursorPosition(e)
 
-      this.drawingIndex = coordinates.length
-      this.pointA = { x, y }
-      this.id = shortid.generate()
-      this.color = colors[this.colorIndex++]
-      if(this.colorIndex >= colors.length) this.colorIndex = 0;
+      setDrawingIndex(crops.length)
+      setPointStart({ x, y })
+      setId(shortid.generate());
+      setColor(colors[colorIndex])
+      setColorIndex(i => i >= colors.length ? 0 : i+1);
     }
   }
 
 
-  handleMouseMove = (e) => {
-    const { onDraw, coordinates } = this.props
-    const { pointA } = this
-    if (isValidPoint(pointA)) {
-      const pointB = this.getCursorPosition(e)
+  const handleMouseMove = (e) => {
+    if (isValidPoint(pointStart)) {
+      const pointEnd = getCursorPosition(e)
 
-      // get the drawing coordinate
-      const coordinate = {
-        x: Math.min(pointA.x, pointB.x),
-        y: Math.min(pointA.y, pointB.y),
-        width: Math.abs(pointA.x - pointB.x),
-        height: Math.abs(pointA.y - pointB.y),
-        id: this.id,
-        color: this.color,
+      const crop = {
+        x: Math.min(pointStart.x, pointEnd.x),
+        y: Math.min(pointStart.y, pointEnd.y),
+        width: Math.abs(pointStart.x - pointEnd.x),
+        height: Math.abs(pointStart.y - pointEnd.y),
+        id,
+        color,
       }
-      const nextCoordinates = clone(coordinates)
-      nextCoordinates[this.drawingIndex] = coordinate
-      onDraw?.(coordinate, this.drawingIndex, nextCoordinates)
-      this.onChangeCrop(coordinate, this.drawingIndex, nextCoordinates)
+      onChangeCrop(crop, true)
     }
   }
 
-  handlMouseUp = () => {
-    this.pointA = {}
+  const handleMouseUp = () => {
+    setPointStart({})
+  }
+  const deleteCrop = (crop) => {
+    const targetIndex = crops.findIndex(c => c.id === crop.id);
+    crops.splice(targetIndex, 1);
+    crops.forEach(c => c.className = "");
+    onChange?.(crop, targetIndex, crops);
   }
 
-  onChangeCrop = (coordinate, index, _crops) => {
-    _crops.forEach(c => c.className = "");
-    coordinate.className = "active";
-    this.props.onChange?.(coordinate, index, _crops);
+  const onChangeCrop = (crop, isNew) => {
+    crops.forEach(c => c.className = "");
+    crop.className = "active";
+    const targetIndex = isNew ? drawingIndex : crops.findIndex(c => c.id === crop.id);
+    crops[targetIndex] = crop;
+
+    onChange?.(crop, targetIndex, crops);
   }
 
-  onClickCrop = (coordinate, index) => {
-    this.props.coordinates.forEach(c => c.className = "");
-    coordinate.className = "active";
-    this.props.onChange?.(coordinate, index, [...this.props.coordinates]);
-  }
-
-  render() {
-    const {
-      src, width, height, onLoad,
-    } = this.props
     return (
       <div
         style={{ display: 'inline-block', position: 'relative',}}
-        onMouseDown={this.handleMouseDown}
-        onMouseMove={this.handleMouseMove}
-        onMouseUp={this.handlMouseUp}
-        ref={container => this.container = container}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        className="multiCropsContainer"
+        ref={containerRef}
       >
         <img
-          ref={img => this.img = img}
+          ref={imgRef}
           src={src}
           width={width}
           height={height}
-          onLoad={onLoad}
           alt=""
           draggable={false}
         />
         {
-          this.props.coordinates.map((coor, index) => (
+          crops.map((crop, index) => (
             <Crop
-              key={coor.id || index}
+              key={crop.id || index}
               index={index}
-              coordinate={coor}
-              color={coor.color}
-              className={coor.className}
-              {...this.props}
-              onChange={this.onChangeCrop}
-              onClick={this.onClickCrop}
+              crop={crop}
+              color={crop.color}
+              className={crop.className}
+              deleteCrop={deleteCrop}
+              onChange={onChangeCrop}
+              onClick={onChangeCrop}
             />
           ))
         }
       </div>
     )
-  }
 }
-
-const {
-  string, arrayOf, number, func,
-} = PropTypes
-
-MultiCrops.propTypes = {
-  coordinates: arrayOf(coordinateType),
-  src: string,
-  width: number, // eslint-disable-line
-  height: number, // eslint-disable-line
-  onDraw: func, // eslint-disable-line
-  onChange: func, // eslint-disable-line
-  onLoad: func, // eslint-disable-line
-  onClick: func, // eslint-disable-line
-  colors: arrayOf(string)
-}
-
-MultiCrops.defaultProps = {
-  coordinates: [],
-  src: '',
-  colors: ["#ff0000", "#00ff00", "#0000ff"]
-}
-
-export default MultiCrops
-

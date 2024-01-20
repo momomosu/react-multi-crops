@@ -21,6 +21,8 @@
   "rules": {
       "react/jsx-filename-extension": "off",
       "no-return-assign": "off",
+      "import/prefer-default-export": "off",
+      "react/prop-types": "off",
       "react/sort-comp": "off",
       "react/jsx-uses-vars": 1,
       "react/jsx-uses-react": 1,

@@ -1,4 +1,3 @@
-import MultiCrops from './components/MultiCrops'
+import MultiCrops from './components/MultiCropsClass'
 
-export { removeid, addid } from './utils'
 export default MultiCrops

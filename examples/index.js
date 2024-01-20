@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import ReactDOM from 'react-dom'
-import MultiCrops from '../src/components/MultiCrops'
 import sampleImg from './imgs/kumamon.jpg'
+import {MultiCrops} from '../src/components/MultiCrops'
 
 const samples = [
   { x: 178, y: 91, width: 158, height: 132, id: 'SJxb6YpuG', color: "#ffff55", className: "test1"},
@@ -19,38 +19,26 @@ const App = () => {
     console.log(file);
     console.log(args);
   }
-  const changeCoordinate = (coordinate, index, _crops) => {
-    setCrops(_crops);
-  }
-  const deleteCoordinate = (coordinate, index, _crops) => {
-    setCrops(_crops);
-  }
-  const onClick = (coordinate, index) => {
-    console.log("onClick", coordinate);
+  const changeCoordinate = (crop, index, _crops) => {
+    console.log("changeCoordinate", _crops);
+    setCrops([..._crops]);
   }
   return (
     <div>
-      <h1>Dragging, Drawing, Resizing rectangles on the img</h1>
+      <h1>Drag and resize rectangles on the img</h1>
 
       <div>
         <input type="file" onChange={onChangeImage} />
       </div>
       <MultiCrops
         src={image}
-        coordinates={crops}
-        // onDrag={this.changeCoordinate}
-        // onResize={this.changeCoordinate}
-        // onDraw={this.changeCoordinate}
-        onClick={onClick}
-        onChange={changeCoordinate}
-        onDelete={deleteCoordinate}
+        crops={crops}
         colors={cropColors}
-        // onLoad={e => console.log(e.target.height, e.target.width)}
+        onChange={changeCoordinate}
       />
     </div>
   )
 }
-
 
 ReactDOM.render(
   <App />

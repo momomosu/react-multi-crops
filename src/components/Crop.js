@@ -1,21 +1,19 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { equals, update, remove } from 'ramda'
+import { equals } from 'ramda'
 import interact from 'interactjs'
 import { DeleteIcon, NumberIcon } from './Icons'
 
-class Crop extends Component {
+export class Crop extends Component {
   dxSum = 0;
   dySum = 0;
 
-  static cropStyle = (coordinate) => {
+  cropStyle = () => {
     const {
-      x, y, width, height, color
-    } = coordinate
+      x, y, width, height
+    } = this.props.crop
 
     return {
-      // border: '1px dotted rgba(153,153,153,1)',
-      // background: 'rgba(153,153,153,0.3)',
       display: 'inline-block',
       position: 'absolute',
       width,
@@ -23,14 +21,12 @@ class Crop extends Component {
       top: y,
       left: x,
 
-      boxShadow: '0 0 3px #000',
-      background: color || '#8c8c8c',
-      opacity: 0.6,
+      background: this.props.color || '#8c8c8c',
     }
   }
 
   componentDidMount() {
-    interact(this.crop)
+    interact(this.cropRef)
       .draggable({})
       .resizable({
         edges: {
@@ -46,21 +42,13 @@ class Crop extends Component {
   }
 
   handleClick = () => {
-    const {
-      index,
-      coordinate,
-      onClick,
-    } = this.props
-
-    onClick?.(coordinate, index)
+    const { crop, onClick } = this.props
+    onClick?.(crop)
   }
   handleResizeMove = (e) => {
     const {
-      index,
-      coordinate,
-      coordinate: { x, y, width, height },
-      coordinates,
-      onResize,
+      crop,
+      crop: { x, y, width, height },
       onChange,
     } = this.props
     const r = x + width;
@@ -69,20 +57,12 @@ class Crop extends Component {
     const newX = e.edges.left ? r - newW : x;
     const newY = e.edges.top ? b - newH : y;
 
-    const nextCoordinate = {
-      ...coordinate, x: newX, y: newY, width: newW, height: newH,
-    }
-    const nextCoordinates = update(index, nextCoordinate)(coordinates)
-    onResize?.(nextCoordinate, index, nextCoordinates)
-    onChange?.(nextCoordinate, index, nextCoordinates)
+    onChange?.({...crop, x: newX, y: newY, width: newW, height: newH,})
   }
   handleDragMove = (e) => {
     const {
-      index,
-      coordinate,
-      coordinate: { x, y },
-      coordinates,
-      onDrag,
+      crop,
+      crop: { x, y },
       onChange,
     } = this.props
     const { dx, dy } = e
@@ -90,43 +70,44 @@ class Crop extends Component {
     this.dxSum += dx;
     this.dySum += dy;
 
-    const nextCoordinate = {...coordinate, x: x + this.dxSum, y: y + this.dySum}
-    const nextCoordinates = update(index, nextCoordinate)(coordinates)
-    onDrag?.(nextCoordinate, index, nextCoordinates)
-    onChange?.(nextCoordinate, index, nextCoordinates)
+    onChange?.({...crop, x: x + this.dxSum, y: y + this.dySum})
   }
 
   handleDelete = () => {
-    const {
-      index,
-      coordinate,
-      onDelete,
-      coordinates,
-    } = this.props
-    const nextCoordinates = remove(index, 1)(coordinates)
-    onDelete?.(coordinate, index, nextCoordinates)
+    const { crop, deleteCrop } = this.props
+    deleteCrop?.(crop)
   }
 
   componentWillUnmount() {
-    interact(this.crop).unset()
+    interact(this.cropRef).unset()
   }
 
   render() {
     this.dxSum = 0;
     this.dySum = 0;
 
-    const { coordinate, index, className } = this.props
+    const { index, className } = this.props
     return (
-      <div style={Crop.cropStyle(coordinate)} className={`crop ${className}`} ref={crop => this.crop = crop}>
+      <div style={this.cropStyle()} className={`crop ${className}`} ref={ref => this.cropRef = ref}>
+        <style jsx>{`
+          .crop {
+            z-index: 1;
+            opacity: 0.4;
+          }
+          .crop.active{
+            z-index: 10;
+            opacity: 0.7;
+          }
+        `}
+        </style>
         <NumberIcon number={index + 1} />
         <DeleteIcon onClick={this.handleDelete} />
       </div>
     )
   }
 }
-// todo coordinatesを親だけが知るようにリファクタリング
 
-export const coordinateType = PropTypes.shape({
+export const cropType = PropTypes.shape({
   x: PropTypes.number.isRequired,
   y: PropTypes.number.isRequired,
   width: PropTypes.number.isRequired,
@@ -134,18 +115,15 @@ export const coordinateType = PropTypes.shape({
 })
 
 Crop.propTypes = {
-  coordinate: coordinateType.isRequired,
+  crop: cropType.isRequired,
   index: PropTypes.number.isRequired,
-  onResize: PropTypes.func, // eslint-disable-line
-  onDrag: PropTypes.func, // eslint-disable-line
-  onDelete: PropTypes.func, // eslint-disable-line
+  className: PropTypes.string,
+  color: PropTypes.string,
+  deleteCrop: PropTypes.func, // eslint-disable-line
   onChange: PropTypes.func, // eslint-disable-line
   onClick: PropTypes.func, // eslint-disable-line
-  coordinates: PropTypes.array, // eslint-disable-line
-  className: PropTypes.string
 }
 Crop.defaultProps = {
   className: "",
+  color: "#fff",
 }
-
-export default Crop
