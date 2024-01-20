@@ -35,7 +35,7 @@ export const MultiCrops = ({src, width, height, crops, colors=defaultColors, onC
       setPointStart({ x, y })
       setId(shortid.generate());
       setColor(colors[colorIndex])
-      setColorIndex(i => i >= colors.length ? 0 : i+1);
+      setColorIndex(i => i >= colors.length - 1 ? 0 : i+1);
     }
   }
 
