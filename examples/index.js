@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import ReactDOM from 'react-dom'
-import sampleImg from './imgs/kumamon.jpg'
+import sampleImg from './imgs/sample.jpg'
 import {MultiCrops} from '../src/components/MultiCrops'
 
 const samples = [
@@ -32,6 +32,7 @@ const App = () => {
       </div>
       <MultiCrops
         src={image}
+        width={1200}
         crops={crops}
         colors={cropColors}
         onChange={changeCoordinate}
