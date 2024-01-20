@@ -2,9 +2,7 @@
 
 A multiple cropping component for React
 
-forked from https://beizhedenglong.github.io/react-multi-crops/ 　
-
-[(online demo)](./examples/index.html)
+[(online demo)](https://momomosu.github.io/react-multi-crops/)
 
 
 ![img.png](examples/imgs/preview.png)
