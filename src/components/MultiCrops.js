@@ -2,7 +2,6 @@ import React, {useRef, useState} from 'react'
 import shortid from 'shortid'
 import {Crop} from './Crop'
 
-
 const isValidPoint = (point = {}) => {
   const strictNumber = number => typeof number === 'number' && !Number.isNaN(number);
   return strictNumber(point.x) && strictNumber(point.y)
@@ -18,7 +17,33 @@ export const MultiCrops = ({src, width, height, crops, colors=defaultColors, onC
   const [id, setId] = useState("");
   const containerRef = useRef();
   const imgRef = useRef();
+  const [zoom, setZoom] = useState(1);
+  const [imageLeft, setImageLeft] = useState(0);
+  const [imageTop, setImageTop] = useState(0);
 
+  const onImageLoad = () => {
+    const image = imgRef.current;
+    if (!image) return;
+
+    // 表示されている画像の左上位置を計算
+    const containerWidth = image.clientWidth;
+    const containerHeight = image.clientHeight;
+    const {naturalWidth, naturalHeight} = image;
+    setZoom(image.width / image.naturalWidth);
+
+    const aspectRatio = naturalWidth / naturalHeight;
+    let displayedWidth, displayedHeight;
+
+    if (containerWidth / containerHeight > aspectRatio) {
+      displayedWidth = containerHeight * aspectRatio;
+      setImageLeft((containerWidth - displayedWidth) / 2);
+      setImageTop(0);
+    } else {
+      displayedHeight = containerWidth / aspectRatio;
+      setImageLeft(0);
+      setImageTop((containerHeight - displayedHeight) / 2);
+    }
+  }
   const getCursorPosition = (e) => {
     const { left, top } = containerRef.current.getBoundingClientRect()
     return {
@@ -45,10 +70,10 @@ export const MultiCrops = ({src, width, height, crops, colors=defaultColors, onC
       const pointEnd = getCursorPosition(e)
 
       const crop = {
-        x: Math.min(pointStart.x, pointEnd.x),
-        y: Math.min(pointStart.y, pointEnd.y),
-        width: Math.abs(pointStart.x - pointEnd.x),
-        height: Math.abs(pointStart.y - pointEnd.y),
+        x: Math.min(pointStart.x, pointEnd.x) / zoom,
+        y: Math.min(pointStart.y, pointEnd.y) / zoom,
+        width: Math.abs(pointStart.x - pointEnd.x) / zoom,
+        height: Math.abs(pointStart.y - pointEnd.y) / zoom,
         id,
         color,
       }
@@ -91,21 +116,26 @@ export const MultiCrops = ({src, width, height, crops, colors=defaultColors, onC
           height={height}
           alt=""
           draggable={false}
+          onLoad={onImageLoad}
+          style={{objectFit: "contain"}}
         />
-        {
-          crops.map((crop, index) => (
-            <Crop
-              key={crop.id || index}
-              index={index}
-              crop={crop}
-              color={crop.color}
-              className={crop.className}
-              deleteCrop={deleteCrop}
-              onChange={onChangeCrop}
-              onClick={onChangeCrop}
-            />
-          ))
-        }
+        <div className="cropContainer" style={{left: imageLeft+"px", top: imageTop+"px", position: "absolute"}}>
+          {
+            crops.map((crop, index) => (
+              <Crop
+                key={crop.id || index}
+                index={index}
+                crop={crop}
+                color={crop.color}
+                className={crop.className}
+                zoom={zoom}
+                deleteCrop={deleteCrop}
+                onChange={onChangeCrop}
+                onClick={onChangeCrop}
+              />
+            ))
+          }
+        </div>
       </div>
     )
 }

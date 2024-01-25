@@ -8,18 +8,16 @@ export class Crop extends Component {
   dxSum = 0;
   dySum = 0;
 
-  cropStyle = () => {
-    const {
-      x, y, width, height
-    } = this.props.crop
+  cropStyle = (zoom) => {
+    const { x, y, width, height } = this.props.crop
 
     return {
       display: 'inline-block',
       position: 'absolute',
-      width,
-      height,
-      top: y,
-      left: x,
+      width: width * zoom,
+      height: height * zoom,
+      top: y * zoom,
+      left: x * zoom,
 
       background: this.props.color || '#8c8c8c',
     }
@@ -50,10 +48,12 @@ export class Crop extends Component {
       crop,
       crop: { x, y, width, height },
       onChange,
+      zoom
     } = this.props
     const r = x + width;
     const b = y + height;
-    const { width: newW, height: newH } = e.rect
+    const newW = e.rect.width / zoom;
+    const newH = e.rect.height / zoom;
     const newX = e.edges.left ? r - newW : x;
     const newY = e.edges.top ? b - newH : y;
 
@@ -64,11 +64,12 @@ export class Crop extends Component {
       crop,
       crop: { x, y },
       onChange,
+      zoom
     } = this.props
     const { dx, dy } = e
     // may called multi times between render.
-    this.dxSum += dx;
-    this.dySum += dy;
+    this.dxSum += dx / zoom;
+    this.dySum += dy / zoom;
 
     onChange?.({...crop, x: x + this.dxSum, y: y + this.dySum})
   }
@@ -88,7 +89,7 @@ export class Crop extends Component {
 
     const { index, className } = this.props
     return (
-      <div style={this.cropStyle()} className={`crop ${className}`} ref={ref => this.cropRef = ref}>
+      <div style={this.cropStyle(this.props.zoom)} className={`crop ${className}`} ref={ref => this.cropRef = ref}>
         <style jsx>{`
           .crop {
             z-index: 1;
@@ -119,6 +120,7 @@ Crop.propTypes = {
   index: PropTypes.number.isRequired,
   className: PropTypes.string,
   color: PropTypes.string,
+  zoom: PropTypes.number,
   deleteCrop: PropTypes.func, // eslint-disable-line
   onChange: PropTypes.func, // eslint-disable-line
   onClick: PropTypes.func, // eslint-disable-line
@@ -126,4 +128,5 @@ Crop.propTypes = {
 Crop.defaultProps = {
   className: "",
   color: "#fff",
+  zoom: 1,
 }
