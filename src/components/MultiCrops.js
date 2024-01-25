@@ -47,8 +47,8 @@ export const MultiCrops = ({src, width, height, crops, colors=defaultColors, onC
   const getCursorPosition = (e) => {
     const { left, top } = containerRef.current.getBoundingClientRect()
     return {
-      x: e.clientX - left,
-      y: e.clientY - top,
+      x: e.clientX - left - imageLeft,
+      y: e.clientY - top - imageTop,
     }
   }
 
