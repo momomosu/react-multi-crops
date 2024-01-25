@@ -1,0 +1,1 @@
+{"version":3,"sources":["styles.css"],"names":[],"mappings":"AAAA,qBACI,qBACJ,CACA,yBACI,gBACJ","file":"styles.421094e1.css","sourceRoot":"..\\examples","sourcesContent":[".multiCropsContainer {\r\n    border: 1px solid #999;\r\n}\r\n.multiCropsContainer img{\r\n    max-width: 1200px;\r\n}"]}
