@@ -38,6 +38,9 @@ const App = () => {
         colors={cropColors}
         onChange={changeCoordinate}
       />
+      <div>
+        {JSON.stringify(crops)}
+      </div>
     </div>
   )
 }

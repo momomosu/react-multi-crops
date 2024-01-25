@@ -8,6 +8,7 @@ const isValidPoint = (point = {}) => {
 }
 
 const defaultColors = ["#ff9999", "#99ff99", "#9999ff", "#ffff55", "#ff55ff"];
+const ImagePadding = 20;
 
 export const MultiCrops = ({src, width, height, crops, colors=defaultColors, onChange=null}) => {
   const [pointStart, setPointStart] = useState({});
@@ -29,26 +30,28 @@ export const MultiCrops = ({src, width, height, crops, colors=defaultColors, onC
     const containerWidth = image.clientWidth;
     const containerHeight = image.clientHeight;
     const {naturalWidth, naturalHeight} = image;
-    setZoom(image.width / image.naturalWidth);
 
     const aspectRatio = naturalWidth / naturalHeight;
-    let displayedWidth, displayedHeight;
+    let displayedWidth, displayedHeight, _zoom;
 
     if (containerWidth / containerHeight > aspectRatio) {
-      displayedWidth = containerHeight * aspectRatio;
+      _zoom = containerHeight / naturalHeight;
+      displayedWidth = naturalWidth * _zoom;
       setImageLeft((containerWidth - displayedWidth) / 2);
       setImageTop(0);
     } else {
-      displayedHeight = containerWidth / aspectRatio;
+      _zoom = containerWidth / naturalWidth;
+      displayedHeight = containerHeight * _zoom;
       setImageLeft(0);
       setImageTop((containerHeight - displayedHeight) / 2);
     }
+    setZoom(_zoom);
   }
   const getCursorPosition = (e) => {
     const { left, top } = containerRef.current.getBoundingClientRect()
     return {
-      x: e.clientX - left - imageLeft,
-      y: e.clientY - top - imageTop,
+      x: e.clientX - left - imageLeft - ImagePadding,
+      y: e.clientY - top - imageTop - ImagePadding,
     }
   }
 
@@ -102,7 +105,7 @@ export const MultiCrops = ({src, width, height, crops, colors=defaultColors, onC
 
     return (
       <div
-        style={{ display: 'inline-block', position: 'relative',}}
+        style={{ display: 'inline-block', position: 'relative', padding: "20px", userSelect: "none"}}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -119,7 +122,7 @@ export const MultiCrops = ({src, width, height, crops, colors=defaultColors, onC
           onLoad={onImageLoad}
           style={{objectFit: "contain"}}
         />
-        <div className="cropContainer" style={{left: imageLeft+"px", top: imageTop+"px", position: "absolute"}}>
+        <div className="cropContainer" style={{left: imageLeft+ImagePadding+"px", top: imageTop+ImagePadding+"px", position: "absolute"}}>
           {
             crops.map((crop, index) => (
               <Crop
